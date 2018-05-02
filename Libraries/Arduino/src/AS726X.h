@@ -99,8 +99,6 @@ private:
 	void writeRegister(byte addr, byte val);
 	byte readRegister(byte addr);
 #define AS726X_ADDR 0x49 //7-bit unshifted default I2C Address
-#define SENSORTYPE_AS7262 0x3E
-#define SENSORTYPE_AS7263 0x3F
 
 	//Register addresses
 #define AS726x_DEVICE_TYPE 0x00
