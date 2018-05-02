@@ -5,7 +5,7 @@
 
 AS726X::AS726X()
 {
-	
+
 }
 
 void AS726X::begin(TwoWire &wirePort, byte gain, byte measurementMode)
@@ -14,9 +14,9 @@ void AS726X::begin(TwoWire &wirePort, byte gain, byte measurementMode)
 	_i2cPort->begin();
 	Serial.begin(115200);
 	_sensorVersion = virtualReadRegister(AS726x_HW_VERSION);
-	if (_sensorVersion != 0x3E && _sensorVersion != 0x3F) //HW version for AS7262 and AS7263
+	if (_sensorVersion != 0x3D && _sensorVersion != 0x3E && _sensorVersion != 0x3F) //HW version for AS7262 and AS7263
 	{
-		Serial.print("ID (should be 0x3E or 0x3F): 0x");
+		Serial.print("ID (should be 0x3D or 0x3E or 0x3F): 0x");
 		Serial.println(_sensorVersion, HEX);
 	}
 
@@ -38,7 +38,7 @@ void AS726X::begin(TwoWire &wirePort, byte gain, byte measurementMode)
 		Serial.println("Sensor failed to respond. Check wiring.");
 		while (1); //Freeze!
 	}
-
+	if (_sensorVersion == SENSORTYPE_AS7261) Serial.println("AS7261 online!");
 	if (_sensorVersion == SENSORTYPE_AS7262) Serial.println("AS7262 online!");
 	if (_sensorVersion == SENSORTYPE_AS7263) Serial.println("AS7263 online!");
 }
@@ -104,38 +104,48 @@ void AS726X::disableInterrupt()
 void AS726X::printMeasurements()
 {
 	float tempF = getTemperatureF();
+	switch (_sensorVersion){
+		case SENSORTYPE_AS7261:
+			//Calibrated XYZ readings
+			Serial.print(" Reading: X[");
+			Serial.print(getCalibratedX(), 2);
+			Serial.print("] Y[");
+			Serial.print(getCalibratedY(), 2);
+			Serial.print("] Z[");
+			Serial.print(getCalibratedZ(), 2);
+		break;
 
-	if (_sensorVersion == SENSORTYPE_AS7262)
-	{
-		//Visible readings
-		Serial.print(" Reading: V[");
-		Serial.print(getCalibratedViolet(), 2);
-		Serial.print("] B[");
-		Serial.print(getCalibratedBlue(), 2);
-		Serial.print("] G[");
-		Serial.print(getCalibratedGreen(), 2);
-		Serial.print("] Y[");
-		Serial.print(getCalibratedYellow(), 2);
-		Serial.print("] O[");
-		Serial.print(getCalibratedOrange(), 2);
-		Serial.print("] R[");
-		Serial.print(getCalibratedRed(), 2);
-	}
-	else if (_sensorVersion == SENSORTYPE_AS7263)
-	{
-		//Near IR readings
-		Serial.print(" Reading: R[");
-		Serial.print(getCalibratedR(), 2);
-		Serial.print("] S[");
-		Serial.print(getCalibratedS(), 2);
-		Serial.print("] T[");
-		Serial.print(getCalibratedT(), 2);
-		Serial.print("] U[");
-		Serial.print(getCalibratedU(), 2);
-		Serial.print("] V[");
-		Serial.print(getCalibratedV(), 2);
-		Serial.print("] W[");
-		Serial.print(getCalibratedW(), 2);
+		case SENSORTYPE_AS7262:
+			//Visible readings
+			Serial.print(" Reading: V[");
+			Serial.print(getCalibratedViolet(), 2);
+			Serial.print("] B[");
+			Serial.print(getCalibratedBlue(), 2);
+			Serial.print("] G[");
+			Serial.print(getCalibratedGreen(), 2);
+			Serial.print("] Y[");
+			Serial.print(getCalibratedYellow(), 2);
+			Serial.print("] O[");
+			Serial.print(getCalibratedOrange(), 2);
+			Serial.print("] R[");
+			Serial.print(getCalibratedRed(), 2);
+		break;
+
+		case SENSORTYPE_AS7263:
+			//Near IR readings
+			Serial.print(" Reading: R[");
+			Serial.print(getCalibratedR(), 2);
+			Serial.print("] S[");
+			Serial.print(getCalibratedS(), 2);
+			Serial.print("] T[");
+			Serial.print(getCalibratedT(), 2);
+			Serial.print("] U[");
+			Serial.print(getCalibratedU(), 2);
+			Serial.print("] V[");
+			Serial.print(getCalibratedV(), 2);
+			Serial.print("] W[");
+			Serial.print(getCalibratedW(), 2);
+		break;
 	}
 
 	Serial.print("] tempF[");
@@ -149,37 +159,49 @@ void AS726X::printUncalibratedMeasurements()
 {
 	float tempF = getTemperatureF();
 
-	if (_sensorVersion == SENSORTYPE_AS7262)
-	{
-		//Visible readings
-		Serial.print(" Reading: V[");
-		Serial.print(getViolet(), 2);
-		Serial.print("] B[");
-		Serial.print(getBlue(), 2);
-		Serial.print("] G[");
-		Serial.print(getGreen(), 2);
-		Serial.print("] Y[");
-		Serial.print(getYellow(), 2);
-		Serial.print("] O[");
-		Serial.print(getOrange(), 2);
-		Serial.print("] R[");
-		Serial.print(getRed(), 2);
-	}
-	else if (_sensorVersion == SENSORTYPE_AS7263)
-	{
-		//Near IR readings
-		Serial.print(" Reading: R[");
-		Serial.print(getR(), 2);
-		Serial.print("] S[");
-		Serial.print(getS(), 2);
-		Serial.print("] T[");
-		Serial.print(getT(), 2);
-		Serial.print("] U[");
-		Serial.print(getU(), 2);
-		Serial.print("] V[");
-		Serial.print(getV(), 2);
-		Serial.print("] W[");
-		Serial.print(getW(), 2);
+	switch (_sensorVersion){
+		case SENSORTYPE_AS7261:
+			// XYZ readings
+			Serial.print(" Reading: X[");
+			Serial.print(getX(), 2);
+			Serial.print("] Y[");
+			Serial.print(getY(), 2);
+			Serial.print("] Z[");
+			Serial.print(getZ(), 2);
+
+		break;
+
+		case SENSORTYPE_AS7262:
+			//Visible readings
+			Serial.print(" Reading: V[");
+			Serial.print(getViolet(), 2);
+			Serial.print("] B[");
+			Serial.print(getBlue(), 2);
+			Serial.print("] G[");
+			Serial.print(getGreen(), 2);
+			Serial.print("] Y[");
+			Serial.print(getYellow(), 2);
+			Serial.print("] O[");
+			Serial.print(getOrange(), 2);
+			Serial.print("] R[");
+			Serial.print(getRed(), 2);
+		break;
+
+		case SENSORTYPE_AS7263:
+			//Near IR readings
+			Serial.print(" Reading: R[");
+			Serial.print(getR(), 2);
+			Serial.print("] S[");
+			Serial.print(getS(), 2);
+			Serial.print("] T[");
+			Serial.print(getT(), 2);
+			Serial.print("] U[");
+			Serial.print(getU(), 2);
+			Serial.print("] V[");
+			Serial.print(getV(), 2);
+			Serial.print("] W[");
+			Serial.print(getW(), 2);
+		break;
 	}
 
 	Serial.print("] tempF[");
@@ -206,7 +228,7 @@ void AS726X::takeMeasurements()
 //Turns on bulb, takes measurements, turns off bulb
 void AS726X::takeMeasurementsWithBulb()
 {
-	//enableIndicator(); //Tell the world we are taking a reading. 
+	//enableIndicator(); //Tell the world we are taking a reading.
 	//The indicator LED is red and may corrupt the readings
 
 	enableBulb(); //Turn on bulb to take measurement
@@ -216,6 +238,14 @@ void AS726X::takeMeasurementsWithBulb()
 	disableBulb(); //Turn off bulb to avoid heating sensor
 				   //disableIndicator();
 }
+
+//Get the various readings
+int AS726X::getX() { return(getChannel(AS7261_X)); }
+int AS726X::getY() { return(getChannel(AS7261_Y)); }
+int AS726X::getZ() { return(getChannel(AS7261_Z)); }
+int AS726X::getNIR() { return(getChannel(AS7261_N)); }
+int AS726X::getDark() { return(getChannel(AS7261_D)); }
+int AS726X::getClear() { return(getChannel(AS7261_C)); }
 
 //Get the various color readings
 int AS726X::getViolet() { return(getChannel(AS7262_V)); }
@@ -233,7 +263,7 @@ int AS726X::getU() { return(getChannel(AS7263_U)); }
 int AS726X::getV() { return(getChannel(AS7263_V)); }
 int AS726X::getW() { return(getChannel(AS7263_W)); }
 
-//A the 16-bit value stored in a given channel registerReturns 
+//Returns the 16-bit value stored in a given channel register
 int AS726X::getChannel(byte channelRegister)
 {
 	int colorData = virtualReadRegister(channelRegister) << 8; //High byte
@@ -242,6 +272,10 @@ int AS726X::getChannel(byte channelRegister)
 }
 
 //Returns the various calibration data
+float AS726X::getCalibratedX() { return(getCalibratedValue(AS7261_X_CAL)); }
+float AS726X::getCalibratedY() { return(getCalibratedValue(AS7261_Y_CAL)); }
+float AS726X::getCalibratedZ() { return(getCalibratedValue(AS7261_Z_CAL)); }
+
 float AS726X::getCalibratedViolet() { return(getCalibratedValue(AS7262_V_CAL)); }
 float AS726X::getCalibratedBlue() { return(getCalibratedValue(AS7262_B_CAL)); }
 float AS726X::getCalibratedGreen() { return(getCalibratedValue(AS7262_G_CAL)); }
@@ -255,6 +289,26 @@ float AS726X::getCalibratedT() { return(getCalibratedValue(AS7263_T_CAL)); }
 float AS726X::getCalibratedU() { return(getCalibratedValue(AS7263_U_CAL)); }
 float AS726X::getCalibratedV() { return(getCalibratedValue(AS7263_V_CAL)); }
 float AS726X::getCalibratedW() { return(getCalibratedValue(AS7263_W_CAL)); }
+
+//Returns calculated color data (AS7261 Only)
+	//Color coordinates according to CIE 1931 color space (normalized)
+float AS726X::getCalibratedx1931() { return(getCalibratedValue(AS7261_x1931_CAL)); }
+float AS726X::getCalibratedy1931() { return(getCalibratedValue(AS7261_y1931_CAL)); }
+
+	//Color coordinatees according to CIE 1976 UCS
+float AS726X::getCalibratedupri() { return(getCalibratedValue(AS7261_upri_CAL)); }
+float AS726X::getCalibratedvpri() { return(getCalibratedValue(AS7261_vpri_CAL)); }
+
+	//Color coordinates according to CIE 1976 (CIELUV)
+float AS726X::getCalibrateducolor() { return(getCalibratedValue(AS7261_u_CAL)); } // Disambiguation with AS7263 U and V
+float AS726X::getCalibratedvcolor() { return(getCalibratedValue(AS7261_v_CAL)); }
+
+	//Brightness (in lux)
+float AS726X::getCalibratedLUX() { return(getCalibratedLongValue(AS7261_LUX_CAL)); }
+
+	//Calibrated Color Temperature and DUV (for white light only)
+float AS726X::getCalibratedDUV() { return(getCalibratedValue(AS7261_DUV_CAL)); }
+float AS726X::getCalibratedCCT() { return(getCalibratedLongValue(AS7261_CCT_CAL)); }
 
 //Given an address, read four bytes and return the floating point calibrated value
 float AS726X::getCalibratedValue(byte calAddress)
@@ -273,6 +327,26 @@ float AS726X::getCalibratedValue(byte calAddress)
 	calBytes |= ((uint32_t)b3 << (8 * 0));
 
 	return (convertBytesToFloat(calBytes));
+}
+
+//Given an address, read four bytes and return the integer calibrated value
+//This is only needed for AS7261_LUX_CAL and AS7261_CCT_CAL, all others are float
+unsigned long AS726X::getCalibratedLongValue(byte calAddress)
+{
+	byte b0, b1, b2, b3;
+	b0 = virtualReadRegister(calAddress + 0);
+	b1 = virtualReadRegister(calAddress + 1);
+	b2 = virtualReadRegister(calAddress + 2);
+	b3 = virtualReadRegister(calAddress + 3);
+
+	//Channel calibrated values are stored big-endian
+	uint32_t calBytes = 0;
+	calBytes |= ((uint32_t)b0 << (8 * 3));
+	calBytes |= ((uint32_t)b1 << (8 * 2));
+	calBytes |= ((uint32_t)b2 << (8 * 1));
+	calBytes |= ((uint32_t)b3 << (8 * 0));
+
+	return (calBytes);
 }
 
 //Given 4 bytes returns the floating point value

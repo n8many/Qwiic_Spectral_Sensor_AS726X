@@ -41,36 +41,59 @@
   void enableInterrupt();
   void disableInterrupt();
 
-  //Get the various color readings
-  int getViolet();
-  int getBlue();
-  int getGreen();
-  int getYellow();
-  int getOrange();
-  int getRed();
+  //Get the various AS7261 readings
+	int getX();
+	int getY();
+	int getZ();
+	int getNIR();
+	int getDark();
+	int getClear();
 
-  //Get the various NIR readings
-  int getR();
-  int getS();
-  int getT();
-  int getU();
-  int getV();
-  int getW();
+	//Get the various color readings
+	int getViolet();
+	int getBlue();
+	int getGreen();
+	int getYellow();
+	int getOrange();
+	int getRed();
 
-  //Returns the various calibration data
-  float getCalibratedViolet();
-  float getCalibratedBlue();
-  float getCalibratedGreen();
-  float getCalibratedYellow();
-  float getCalibratedOrange();
-  float getCalibratedRed();
+	//Get the various NIR readings
+	int getR();
+	int getS();
+	int getT();
+	int getU();
+	int getV();
+	int getW();
 
-  float getCalibratedR();
-  float getCalibratedS();
-  float getCalibratedT();
-  float getCalibratedU();
-  float getCalibratedV();
-  float getCalibratedW();
+	//Returns the various calibration data
+	float getCalibratedX();
+	float getCalibratedY();
+	float getCalibratedZ();
+
+	float getCalibratedViolet();
+	float getCalibratedBlue();
+	float getCalibratedGreen();
+	float getCalibratedYellow();
+	float getCalibratedOrange();
+	float getCalibratedRed();
+
+	float getCalibratedR();
+	float getCalibratedS();
+	float getCalibratedT();
+	float getCalibratedU();
+	float getCalibratedV();
+	float getCalibratedW();
+
+	//Calibrated color data
+	float getCalibratedx1931();
+	float getCalibratedy1931();
+	float getCalibratedupri();
+	float getCalibratedvpri();
+	float getCalibrateducolor();
+	float getCalibratedvcolor();
+	float getCalibratedLUX();
+	float getCalibratedDUV();
+	float getCalibratedCCT();
 */
 
 #include "AS726X.h"

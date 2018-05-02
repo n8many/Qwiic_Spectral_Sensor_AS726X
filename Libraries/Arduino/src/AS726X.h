@@ -32,6 +32,15 @@ public:
 	void setIntegrationTime(byte integrationValue);
 	void enableInterrupt();
 	void disableInterrupt();
+
+	//Get the various AS7261 readings
+	int getX();
+	int getY();
+	int getZ();
+	int getNIR();
+	int getDark();
+	int getClear();
+
 	//Get the various color readings
 	int getViolet();
 	int getBlue();
@@ -49,6 +58,10 @@ public:
 	int getW();
 
 	//Returns the various calibration data
+	float getCalibratedX();
+	float getCalibratedY();
+	float getCalibratedZ();
+
 	float getCalibratedViolet();
 	float getCalibratedBlue();
 	float getCalibratedGreen();
@@ -63,10 +76,22 @@ public:
 	float getCalibratedV();
 	float getCalibratedW();
 
+	//Calibrated color data
+	float getCalibratedx1931();
+	float getCalibratedy1931();
+	float getCalibratedupri();
+	float getCalibratedvpri();
+	float getCalibrateducolor();
+	float getCalibratedvcolor();
+	float getCalibratedLUX();
+	float getCalibratedDUV();
+	float getCalibratedCCT();
+
 private:
 	TwoWire *_i2cPort;
 	int getChannel(byte channelRegister);
 	float getCalibratedValue(byte calAddress);
+	unsigned long getCalibratedLongValue(byte calAddress);
 	float convertBytesToFloat(uint32_t myLong);
 	boolean clearDataAvailable();
 	byte virtualReadRegister(byte virtualAddr);
@@ -90,6 +115,31 @@ private:
 #define AS72XX_SLAVE_READ_REG 0x02
 
 	//The same register locations are shared between the AS7262 and AS7263, they're just called something different
+
+	//AS7261 Registers
+#define AS7261_X 0x08
+#define AS7261_Y 0x0A
+#define AS7261_Z 0x0C
+#define AS7261_N 0x0E
+#define AS7261_D 0x10
+#define AS7261_C 0x12
+
+#define AS7261_X_CAL 0x14
+#define AS7261_Y_CAL 0x18
+#define AS7261_Z_CAL 0x1C
+
+  // The AS7261 differs here
+#define AS7261_x1931_CAL 0x20
+#define AS7261_y1931_CAL 0x24
+#define AS7261_upri_CAL 0x28
+#define AS7261_vpri_CAL 0x2C
+#define AS7261_u_CAL 0x30
+#define AS7261_v_CAL 0x34
+#define AS7261_DUV_CAL 0x38
+#define AS7261_LUX_CAL 0x3C
+#define AS7261_CCT_CAL 0x40
+
+
 	//AS7262 Registers
 #define AS7262_V 0x08
 #define AS7262_B 0x0A
@@ -121,6 +171,7 @@ private:
 #define AS72XX_SLAVE_TX_VALID 0x02
 #define AS72XX_SLAVE_RX_VALID 0x01
 
+#define SENSORTYPE_AS7261 0x3D
 #define SENSORTYPE_AS7262 0x3E
 #define SENSORTYPE_AS7263 0x3F
 
